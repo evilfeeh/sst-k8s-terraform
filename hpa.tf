@@ -1,9 +1,9 @@
 resource "kubernetes_manifest" "horizontalpodautoscaler_fiap_soat_sst_api_hpa" {
   manifest = {
     "apiVersion" = "autoscaling/v1"
-    "kind" = "HorizontalPodAutoscaler"
+    "kind"       = "HorizontalPodAutoscaler"
     "metadata" = {
-      "name" = "sst-api-hpa"
+      "name"      = "sst-api-hpa"
       "namespace" = "fiap-soat"
     }
     "spec" = {
@@ -11,8 +11,8 @@ resource "kubernetes_manifest" "horizontalpodautoscaler_fiap_soat_sst_api_hpa" {
       "minReplicas" = 1
       "scaleTargetRef" = {
         "apiVersion" = "apps/v1"
-        "kind" = "Deployment"
-        "name" = "sst-api"
+        "kind"       = "Deployment"
+        "name"       = "sst-api"
       }
       "targetCPUUtilizationPercentage" = 70
     }

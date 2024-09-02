@@ -1,9 +1,9 @@
 resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
   manifest = {
     "apiVersion" = "apps/v1"
-    "kind" = "Deployment"
+    "kind"       = "Deployment"
     "metadata" = {
-      "name" = "sst-api"
+      "name"      = "sst-api"
       "namespace" = "fiap-soat"
     }
     "spec" = {
@@ -41,9 +41,9 @@ resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
                   "path" = "/api/docs"
                   "port" = 3000
                 }
-                "periodSeconds" = 5
+                "periodSeconds"    = 5
                 "successThreshold" = 1
-                "timeoutSeconds" = 1
+                "timeoutSeconds"   = 1
               }
               "name" = "sst-api"
               "ports" = [
@@ -61,11 +61,11 @@ resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
               }
               "resources" = {
                 "limits" = {
-                  "cpu" = "2000m"
+                  "cpu"    = "2000m"
                   "memory" = "2Gi"
                 }
                 "requests" = {
-                  "cpu" = "300m"
+                  "cpu"    = "300m"
                   "memory" = "128Mi"
                 }
               }
@@ -76,7 +76,7 @@ resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
                   "port" = 3000
                 }
                 "initialDelaySeconds" = 30
-                "periodSeconds" = 3
+                "periodSeconds"       = 3
               }
             },
           ]
@@ -100,7 +100,7 @@ resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
                 },
               ]
               "image" = "evilfeeh/self-service-totem:v2.1.6"
-              "name" = "migrate"
+              "name"  = "migrate"
             },
           ]
         }
