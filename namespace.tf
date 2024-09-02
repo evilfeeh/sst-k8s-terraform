@@ -6,7 +6,7 @@ provider "kubernetes" {
 resource "kubernetes_manifest" "namespace_fiap_soat" {
   manifest = {
     "apiVersion" = "v1"
-    "kind" = "Namespace"
+    "kind"       = "Namespace"
     "metadata" = {
       "name" = "fiap-soat"
     }
