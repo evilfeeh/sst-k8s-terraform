@@ -34,7 +34,7 @@ resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
                   }
                 },
               ]
-              "image" = "evilfeeh/self-service-totem:v2.1.6"
+              "image" = "evilfeeh/self-service-totem:v2.1.7"
               "livenessProbe" = {
                 "failureThreshold" = 1
                 "httpGet" = {
