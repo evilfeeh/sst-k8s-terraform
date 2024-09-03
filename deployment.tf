@@ -61,7 +61,7 @@ resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
               }
               "resources" = {
                 "limits" = {
-                  "cpu"    = "2000m"
+                  "cpu"    = "2"
                   "memory" = "2Gi"
                 }
                 "requests" = {
