@@ -1,7 +1,7 @@
 resource "kubernetes_service" "fiap_soat_sst_api" {
   metadata {
     name      = "sst-api"
-    namespace = kubernetes_namespace.fiap_soat.metadata[0].name
+    namespace = kubernetes_namespace.namespace_fiap_soat.metadata[0].name
 
     labels = {
       app = "sst-api"
@@ -16,12 +16,12 @@ resource "kubernetes_service" "fiap_soat_sst_api" {
     type = "LoadBalancer"
 
     port {
-      name       = "sst-api"
-      port       = 80
+      name        = "sst-api"
+      port        = 80
       target_port = 3000
-      protocol   = "TCP"
+      protocol    = "TCP"
     }
   }
 
-  depends_on = [kubernetes_deployment.fiap_soat_sst_api, kubernetes_manifest.namespace_fiap_soat]
+  depends_on = [kubernetes_deployment.fiap_soat_sst_api, kubernetes_namespace.namespace_fiap_soat]
 }

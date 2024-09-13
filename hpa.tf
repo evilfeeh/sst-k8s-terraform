@@ -1,7 +1,7 @@
 resource "kubernetes_horizontal_pod_autoscaler" "fiap_soat_sst_api_hpa" {
   metadata {
     name      = "sst-api-hpa"
-    namespace = kubernetes_namespace.fiap_soat.metadata[0].name
+    namespace = kubernetes_namespace.namespace_fiap_soat.metadata[0].name
   }
 
   spec {
@@ -17,5 +17,5 @@ resource "kubernetes_horizontal_pod_autoscaler" "fiap_soat_sst_api_hpa" {
     }
   }
 
-  depends_on = [kubernetes_deployment.fiap_soat_sst_api, kubernetes_manifest.namespace_fiap_soat]
+  depends_on = [kubernetes_deployment.fiap_soat_sst_api, kubernetes_namespace.namespace_fiap_soat]
 }

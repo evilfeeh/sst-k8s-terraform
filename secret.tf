@@ -1,7 +1,7 @@
 resource "kubernetes_secret" "fiap_soat_sst_api_secrets" {
   metadata {
     name      = "sst-api-secrets"
-    namespace = kubernetes_namespace.fiap_soat.metadata[0].name
+    namespace = kubernetes_namespace.namespace_fiap_soat.metadata[0].name
   }
 
   data = {
@@ -16,5 +16,5 @@ resource "kubernetes_secret" "fiap_soat_sst_api_secrets" {
 
   type = "Opaque"
 
-  depends_on = [kubernetes_namespace.fiap_soat]
+  depends_on = [kubernetes_namespace.namespace_fiap_soat]
 }

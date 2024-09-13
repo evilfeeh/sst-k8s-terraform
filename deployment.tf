@@ -1,6 +1,6 @@
-resource "kubernetes_deployment" "deployment_fiap_soat_sst_api" {
+resource "kubernetes_deployment" "fiap_soat_sst_api" {
 
-  depends_on = [ kubernetes_manifest.namespace_fiap_soat ]
+  depends_on = [kubernetes_namespace.namespace_fiap_soat]
 
   metadata {
     name      = "sst-api"
@@ -89,8 +89,8 @@ resource "kubernetes_deployment" "deployment_fiap_soat_sst_api" {
               port = 3000
             }
 
-            period_seconds       = 3
-            failure_threshold    = 30
+            period_seconds        = 3
+            failure_threshold     = 30
             initial_delay_seconds = 30
           }
         }
