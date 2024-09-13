@@ -3,11 +3,11 @@ provider "aws" {
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
+  name = aws_eks_cluster.self_service_totem.cluster_id
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
+  name = aws_eks_cluster.self_service_totem.cluster_id
 }
 
 data "aws_availability_zones" "available" {}
@@ -27,7 +27,6 @@ resource "aws_security_group" "worker_group_mgmt_one" {
   }
 }
 
-
 resource "aws_security_group" "all_worker_mgmt" {
   name_prefix = "all_worker_management"
   vpc_id      = module.vpc.vpc_id
@@ -45,35 +44,42 @@ resource "aws_security_group" "all_worker_mgmt" {
   }
 }
 
-module "eks" {
-  source          = "terraform-aws-modules/eks/aws"
-  version         = "20.24.0"
-  cluster_name    = local.name
-  cluster_version = "1.17"
+resource "aws_eks_cluster" "self_service_totem" {
+  name     = local.name
+  role_arn = local.aws_arn  # Use LabRole here
 
-  cluster_endpoint_private_access = true
-  iam_role_arn                    = local.aws_arn
-  vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.vpc.private_subnets
-
-  cluster_addons = {
-    coredns                = {}
-    eks-pod-identity-agent = {}
-    kube-proxy             = {}
-    vpc-cni                = {}
+  vpc_config {
+    subnet_ids = module.vpc.private_subnets
+    endpoint_private_access = true  # Private access to the API endpoint
   }
 
-  eks_managed_node_groups = [
-    {
-      iam_role_arn         = local.aws_arn
-      ami_type             = "AL2023_x86_64_STANDARD"
-      instance_type        = "t3.small"
-      asg_desired_capacity = 1
-      min_size             = 2
-      max_size             = 10
-      desired_size         = 2
-    },
-  ]
+  tags = local.tags
+}
+
+resource "aws_eks_node_group" "self_service_totem_node_group" {
+  cluster_name    = aws_eks_cluster.self_service_totem.name
+  node_group_name = "node-group"
+  node_role_arn   = local.aws_arn  # Use LabRole for nodes
+  subnet_ids      = module.vpc.private_subnets
+
+  scaling_config {
+    desired_size = 2
+    max_size     = 10
+    min_size     = 2
+  }
+
+  instance_types = ["t3.small"]
+  capacity_type  = "SPOT"
+
+  tags = local.tags
+}
+
+data "aws_eks_cluster" "self_service_totem" {
+  name = aws_eks_cluster.self_service_totem.name
+}
+
+data "aws_eks_cluster_auth" "self_service_totem" {
+  name = aws_eks_cluster.self_service_totem.name
 }
 
 locals {
@@ -89,7 +95,7 @@ locals {
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+  host                   = data.aws_eks_cluster.self_service_totem.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.self_service_totem.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.self_service_totem.token
 }
