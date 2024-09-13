@@ -97,7 +97,7 @@ resource "kubernetes_deployment" "fiap_soat_sst_api" {
 
         init_container {
           name  = "migrate"
-          image = "evilfeeh/self-service-totem:v2.1.6"
+          image = "evilfeeh/self-service-totem:v2.1.7"
 
           command = ["npm", "run", "migration:up"]
 
