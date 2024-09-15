@@ -1,7 +1,6 @@
-resource "kubernetes_config_map" "configmap_fiap_soat_sst_env" {
+resource "kubernetes_config_map" "sst_env" {
 
-  depends_on = [kubernetes_namespace.namespace_fiap_soat]
-
+  depends_on = [kubernetes_namespace.fiap_soat]
   metadata {
     name      = "sst-env"
     namespace = "fiap-soat"

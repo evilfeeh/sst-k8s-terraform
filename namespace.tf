@@ -1,4 +1,4 @@
-resource "kubernetes_namespace" "namespace_fiap_soat" {
+resource "kubernetes_namespace" "fiap_soat" {
   metadata {
     name = "fiap-soat"
   }

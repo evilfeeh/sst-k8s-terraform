@@ -1,6 +1,6 @@
-resource "kubernetes_deployment" "fiap_soat_sst_api" {
+resource "kubernetes_deployment" "sst_api" {
 
-  depends_on = [kubernetes_namespace.namespace_fiap_soat]
+  depends_on = [kubernetes_namespace.fiap_soat, kubernetes_config_map.sst_env, kubernetes_secret.sst_api_secrets]
 
   metadata {
     name      = "sst-api"
