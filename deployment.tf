@@ -1,108 +1,117 @@
-resource "kubernetes_manifest" "deployment_fiap_soat_sst_api" {
-  manifest = {
-    "apiVersion" = "apps/v1"
-    "kind"       = "Deployment"
-    "metadata" = {
-      "name"      = "sst-api"
-      "namespace" = "fiap-soat"
+resource "kubernetes_deployment" "sst_api" {
+
+  depends_on = [kubernetes_namespace.fiap_soat, kubernetes_config_map.sst_env, kubernetes_secret.sst_api_secrets]
+
+  metadata {
+    name      = "sst-api"
+    namespace = "fiap-soat"
+    labels = {
+      app = "sst-api"
     }
-    "spec" = {
-      "replicas" = 1
-      "selector" = {
-        "matchLabels" = {
-          "app" = "sst-api"
+  }
+
+  spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        app = "sst-api"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "sst-api"
         }
       }
-      "template" = {
-        "metadata" = {
-          "labels" = {
-            "app" = "sst-api"
+
+      spec {
+        container {
+          name  = "sst-api"
+          image = "evilfeeh/self-service-totem:v2.1.10"
+
+          env_from {
+            secret_ref {
+              name = "sst-api-secrets"
+            }
+          }
+
+          env_from {
+            config_map_ref {
+              name = "sst-env"
+            }
+          }
+
+          port {
+            container_port = 3000
+          }
+
+          resources {
+            limits = {
+              cpu    = "2"
+              memory = "2Gi"
+            }
+
+            requests = {
+              cpu    = "300m"
+              memory = "128Mi"
+            }
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/api/docs"
+              port = 3000
+            }
+
+            period_seconds    = 5
+            success_threshold = 1
+            failure_threshold = 1
+            timeout_seconds   = 1
+          }
+
+          readiness_probe {
+            http_get {
+              path = "/api/docs"
+              port = 3000
+            }
+
+            period_seconds    = 3
+            success_threshold = 1
+            failure_threshold = 1
+            timeout_seconds   = 1
+          }
+
+          startup_probe {
+            http_get {
+              path = "/api/docs"
+              port = 3000
+            }
+
+            period_seconds        = 3
+            failure_threshold     = 30
+            initial_delay_seconds = 30
           }
         }
-        "spec" = {
-          "containers" = [
-            {
-              "envFrom" = [
-                {
-                  "secretRef" = {
-                    "name" = "sst-api-secrets"
-                  }
-                },
-                {
-                  "configMapRef" = {
-                    "name" = "sst-env"
-                  }
-                },
-              ]
-              "image" = "evilfeeh/self-service-totem:v2.1.7"
-              "livenessProbe" = {
-                "failureThreshold" = 1
-                "httpGet" = {
-                  "path" = "/api/docs"
-                  "port" = 3000
-                }
-                "periodSeconds"    = 5
-                "successThreshold" = 1
-                "timeoutSeconds"   = 1
-              }
-              "name" = "sst-api"
-              "ports" = [
-                {
-                  "containerPort" = 3000
-                },
-              ]
-              "readinessProbe" = {
-                "failureThreshold" = 1
-                "httpGet" = {
-                  "path" = "/api/docs"
-                  "port" = 3000
-                }
-                "periodSeconds" = 3
-              }
-              "resources" = {
-                "limits" = {
-                  "cpu"    = "2"
-                  "memory" = "2Gi"
-                }
-                "requests" = {
-                  "cpu"    = "300m"
-                  "memory" = "128Mi"
-                }
-              }
-              "startupProbe" = {
-                "failureThreshold" = 30
-                "httpGet" = {
-                  "path" = "/api/docs"
-                  "port" = 3000
-                }
-                "initialDelaySeconds" = 30
-                "periodSeconds"       = 3
-              }
-            },
-          ]
-          "initContainers" = [
-            {
-              "command" = [
-                "npm",
-                "run",
-                "migration:up",
-              ]
-              "envFrom" = [
-                {
-                  "secretRef" = {
-                    "name" = "sst-api-secrets"
-                  }
-                },
-                {
-                  "configMapRef" = {
-                    "name" = "sst-env"
-                  }
-                },
-              ]
-              "image" = "evilfeeh/self-service-totem:v2.1.6"
-              "name"  = "migrate"
-            },
-          ]
+
+        init_container {
+          name  = "migrate"
+          image = "evilfeeh/self-service-totem:v2.1.10"
+
+          command = ["npm", "run", "migration:up"]
+
+          env_from {
+            secret_ref {
+              name = "sst-api-secrets"
+            }
+          }
+
+          env_from {
+            config_map_ref {
+              name = "sst-env"
+            }
+          }
         }
       }
     }
