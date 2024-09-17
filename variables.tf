@@ -32,3 +32,13 @@ variable "port" {
   default = 3000
   type    = number
 }
+
+variable "private_subnets" {
+  default = []
+  type    = list
+}
+
+variable "vpc_id" {
+  default = "none"
+  type    = string
+}

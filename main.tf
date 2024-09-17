@@ -13,7 +13,7 @@ data "aws_eks_cluster_auth" "cluster" {
 data "aws_availability_zones" "available" {}
 
 resource "aws_eks_cluster" "self_service_totem" {
-  name     = local.name
+  name     = "self-service-totem"
   role_arn = local.aws_arn
 
   vpc_config {
@@ -31,9 +31,9 @@ resource "aws_eks_node_group" "self_service_totem_node_group" {
   subnet_ids      = module.vpc.private_subnets
 
   scaling_config {
-    desired_size = 2
+    desired_size = 1
     max_size     = 10
-    min_size     = 2
+    min_size     = 1
   }
 
   instance_types = ["t3.small"]
@@ -53,12 +53,12 @@ data "aws_eks_cluster_auth" "self_service_totem" {
 locals {
   region   = "us-east-1"
   name     = "self-service-totem"
-  azs      = ["us-east-1a", "us-east-1b", "us-east-1c"]
-  vpc_cidr = "10.123.0.0/16"
+  azs      = ["us-east-1a", "us-east-1b"]
+  vpc_cidr = "10.0.0.0/16"
   tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
   }
-  role_arn = "LabRole"
+  role_arn = "arn:aws:iam::210567676973:role/LabRole"
   aws_arn  = "arn:aws:iam::210567676973:role/LabRole"
 }
 
