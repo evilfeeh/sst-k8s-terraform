@@ -2,8 +2,8 @@ name: Example Service Release
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
+  # push:
+  #   branches: [main]
 
 env:
   AWS_DEFAULT_REGION: us-east-1
@@ -24,7 +24,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
       - name: Initialise project and view terraform plan
         run: |
-          terraform fmt -input=false
+          terraform fmt
           terraform init -input=false
       - name: Validate terraform plan
         run: |
