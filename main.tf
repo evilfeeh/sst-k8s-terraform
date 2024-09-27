@@ -65,6 +65,10 @@ data "aws_eks_cluster_auth" "self_service_totem" {
   name = aws_eks_cluster.self_service_totem.name
 }
 
+data "aws_iam_role" "existing_lambda_role" {
+  name = "LabRole"
+}
+
 locals {
   region   = "us-east-1"
   name     = "self-service-totem"
@@ -73,8 +77,8 @@ locals {
   tags = {
     "kubernetes.io/cluster/${local.name}" = "shared"
   }
-  role_arn = "arn:aws:iam::210567676973:role/LabRole"
-  aws_arn  = "arn:aws:iam::210567676973:role/LabRole"
+  role_arn = data.aws_iam_role.existing_lambda_role.arn
+  aws_arn  = data.aws_iam_role.existing_lambda_role.arn
 }
 
 provider "kubernetes" {
