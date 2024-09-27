@@ -8,7 +8,7 @@ terraform {
   cloud { 
     organization = "sst-fiap-soat" 
     workspaces { 
-      name = "eks-sst" 
+      name = "sst-k8s-terraform" 
     } 
   } 
 }

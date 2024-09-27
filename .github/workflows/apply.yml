@@ -8,7 +8,7 @@ on:
 env:
   TF_CLOUD_ORGANIZATION: "sst-fiap-soat"
   TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-  TF_WORKSPACE: "eks-sst"
+  TF_WORKSPACE: "${{ github.event.repository.name }}"
   CONFIG_DIRECTORY: "./"
 
 jobs:
