@@ -35,7 +35,7 @@ variable "port" {
 
 variable "private_subnets" {
   default = []
-  type    = list
+  type    = list(any)
 }
 
 variable "vpc_id" {
