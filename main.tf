@@ -86,3 +86,26 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.self_service_totem.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.self_service_totem.token
 }
+
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.self_service_totem.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.self_service_totem.certificate_authority.0.data)
+    token                  = data.aws_eks_cluster_auth.self_service_totem.token
+  }
+}
+
+resource "helm_release" "metrics_server" {
+  name       = "metrics-server"
+  namespace  = "kube-system"
+  chart      = "metrics-server"
+  repository = "https://kubernetes-sigs.github.io/metrics-server/"
+  version    = "3.10.0"
+
+  set {
+    name  = "args"
+    value = [
+      "--kubelet-insecure-tls",
+    ]
+  }
+}

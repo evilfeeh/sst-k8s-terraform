@@ -61,7 +61,7 @@ resource "kubernetes_deployment" "sst_api" {
 
           liveness_probe {
             http_get {
-              path = "/api/docs"
+              path = "/public/docs"
               port = 3000
             }
 
@@ -73,7 +73,7 @@ resource "kubernetes_deployment" "sst_api" {
 
           readiness_probe {
             http_get {
-              path = "/api/docs"
+              path = "/public/docs"
               port = 3000
             }
 
@@ -85,7 +85,7 @@ resource "kubernetes_deployment" "sst_api" {
 
           startup_probe {
             http_get {
-              path = "/api/docs"
+              path = "/public/docs"
               port = 3000
             }
 
