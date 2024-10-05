@@ -6,15 +6,21 @@ terraform {
     }
   } 
   cloud { 
-    organization = "sst-fiap-soat" 
+    organization = local.organization
     workspaces { 
-      name = "sst-k8s-terraform" 
+      name = local.repository_name
     } 
   } 
 }
 
 provider "aws" {
   region = "us-east-1"
+}
+
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.self_service_totem.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.self_service_totem.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.self_service_totem.token
 }
 
 data "aws_eks_cluster" "cluster" {
@@ -26,6 +32,18 @@ data "aws_eks_cluster_auth" "cluster" {
 }
 
 data "aws_availability_zones" "available" {}
+
+data "aws_eks_cluster" "self_service_totem" {
+  name = aws_eks_cluster.self_service_totem.name
+}
+
+data "aws_eks_cluster_auth" "self_service_totem" {
+  name = aws_eks_cluster.self_service_totem.name
+}
+
+data "aws_iam_role" "existing_lambda_role" {
+  name = "LabRole"
+}
 
 resource "aws_eks_cluster" "self_service_totem" {
   name     = "self-service-totem"
@@ -57,21 +75,11 @@ resource "aws_eks_node_group" "self_service_totem_node_group" {
   tags = local.tags
 }
 
-data "aws_eks_cluster" "self_service_totem" {
-  name = aws_eks_cluster.self_service_totem.name
-}
-
-data "aws_eks_cluster_auth" "self_service_totem" {
-  name = aws_eks_cluster.self_service_totem.name
-}
-
-data "aws_iam_role" "existing_lambda_role" {
-  name = "LabRole"
-}
-
 locals {
   region   = "us-east-1"
   name     = "self-service-totem"
+  repository_name = "sst-k8s-terraform"
+  organization = "sst-fiap-soat"
   azs      = ["us-east-1a", "us-east-1b"]
   vpc_cidr = "10.0.0.0/16"
   tags = {
@@ -79,10 +87,4 @@ locals {
   }
   role_arn = data.aws_iam_role.existing_lambda_role.arn
   aws_arn  = data.aws_iam_role.existing_lambda_role.arn
-}
-
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.self_service_totem.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.self_service_totem.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.self_service_totem.token
 }
